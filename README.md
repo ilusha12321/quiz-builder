@@ -1,116 +1,104 @@
 # Quiz Builder
 
-Full-stack quiz creation app. Users can create quizzes with three question types
-(True/False, short text, multiple choice with several correct answers), list all quizzes,
-open a quiz in read-only mode and delete quizzes.
+A full-stack web application for creating and managing quizzes with different question types.
 
-- **Backend:** Node.js, Express, TypeScript, Prisma ORM, SQLite, Zod validation
-- **Frontend:** Next.js (Pages Router), React, TypeScript, React Hook Form, Zod, plain CSS
+## Overview
 
-```
+Quiz Builder allows users to create quizzes, add questions, configure answer options, view quiz details, and manage existing quizzes through a clean and responsive interface.
+
+## Features
+
+- Create quizzes with custom titles.
+- Add and manage questions.
+- Support different question types:
+  - **Boolean** — true or false questions.
+  - **Input** — short text answer questions.
+  - **Checkbox** — multiple-choice questions.
+- View a list of available quizzes.
+- View individual quiz details and questions.
+- Delete quizzes.
+- Store and manage quiz data through the backend.
+- Responsive user interface for desktop and mobile devices.
+
+## Screenshots
+
+### 1. Quiz List
+
+Displays the available quizzes, their titles, question counts, and available actions.
+
+<img width="1218" height="936" alt="image" src="https://github.com/user-attachments/assets/c86911a1-75b5-4fae-888e-670fbd543da4" />
+
+
+**Screenshot:** `quiz-list.png`
+
+### 2. Create Quiz
+
+Shows the quiz creation form, including the title field and question editor.
+
+<img width="937" height="951" alt="image" src="https://github.com/user-attachments/assets/d813cb5f-bf04-4a7e-bec7-e88818355260" />
+
+**Screenshot:** `create-quiz.png`
+
+### 3. Question Types
+
+Demonstrates the available question types and their configuration options.
+
+<img width="953" height="936" alt="image" src="https://github.com/user-attachments/assets/b0116a92-0888-44e6-a1db-624f7b1c5fe6" />
+
+
+**Screenshot:** `question-types.png`
+
+### 4. Quiz Details
+
+Displays an individual quiz and its questions.
+
+<img width="868" height="917" alt="image" src="https://github.com/user-attachments/assets/21493a8b-2d2a-4953-887e-90a808b399fc" />
+
+
+**Screenshot:** `quiz-details.png`
+
+### 5. Delete Confirmation
+
+Shows the confirmation dialog before deleting a quiz, if implemented.
+
+<img width="990" height="493" alt="image" src="https://github.com/user-attachments/assets/72e16773-5d90-48d6-9e66-8f432aa79934" />
+
+
+**Screenshot:** `delete-confirmation.png`
+
+## Tech Stack
+
+Update this section to match the technologies actually used in the project.
+
+- **Frontend:** React, TypeScript, Next.js
+- **Backend:** Node.js, Express.js
+- **Database:** SQLite
+- **ORM:** Prisma
+- **Styling:** CSS / Tailwind CSS
+
+## Project Structure
+
+The project may be organized into frontend and backend applications:
+
+```text
 quiz-builder/
-├── backend/    # REST API (src/, prisma/)
-├── frontend/   # Next.js app (pages/, components/, services/)
+├── frontend/
+│   ├── public/
+│   │   └── screenshots/
+│   └── src/
+├── backend/
+│   ├── prisma/
+│   └── src/
+├── .env.example
 └── README.md
 ```
 
-## Requirements
+Adjust the structure above to reflect the actual repository.
 
-- Node.js 18.18 or newer (Node 20 LTS recommended) and npm
+## Getting Started
 
-No Docker or external database server is needed: the database is a local SQLite file.
+### Prerequisites
 
-## 1. Backend
-
-```bash
-cd backend
-cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
-npm install
-npm run db:migrate          # creates prisma/dev.db, applies the schema and seeds a sample quiz
-npm run dev                 # http://localhost:4000
-```
-
-Run the commands one per line (Windows PowerShell 5.1 does not support `&&`). If PowerShell
-blocks `npm`, run `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` once.
-
-Environment variables (`backend/.env`):
-
-| Variable       | Default                 | Description                      |
-| -------------- | ----------------------- | -------------------------------- |
-| `DATABASE_URL` | `file:./dev.db`         | SQLite file, relative to `prisma/` |
-| `PORT`         | `4000`                  | API port                         |
-| `FRONTEND_URL` | `http://localhost:3000` | Allowed CORS origin              |
-
-Production build: `npm run build && npm start`.
-
-## 2. Frontend
-
-```bash
-cd frontend
-cp .env.example .env.local  # Windows PowerShell: Copy-Item .env.example .env.local
-npm install
-npm run dev                 # http://localhost:3000
-```
-
-| Variable              | Default                 | Description          |
-| --------------------- | ----------------------- | -------------------- |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:4000` | Base URL of the API  |
-
-Production build: `npm run build && npm start`.
-
-## 3. Create a sample quiz
-
-Either:
-
-- it is created automatically by the first `npm run db:migrate`; to recreate it run `npm run db:seed` in `backend/` (creates "Sample quiz: JavaScript basics" with one question of each type), or
-- open http://localhost:3000/create, enter a title, add questions, and press **Save quiz**, or
-- call the API directly:
-
-```bash
-curl -X POST http://localhost:4000/quizzes \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Geography",
-    "questions": [
-      { "type": "BOOLEAN", "text": "Kyiv is the capital of Ukraine.", "booleanAnswer": true },
-      { "type": "INPUT", "text": "Longest river in Ukraine?", "textAnswer": "Dnipro" },
-      { "type": "CHECKBOX", "text": "Which are Ukrainian cities?",
-        "options": [
-          { "text": "Lviv", "isCorrect": true },
-          { "text": "Warsaw", "isCorrect": false },
-          { "text": "Odesa", "isCorrect": true }
-        ] }
-    ]
-  }'
-```
-
-## API
-
-| Method | Path           | Description                                              | Success |
-| ------ | -------------- | -------------------------------------------------------- | ------- |
-| POST   | `/quizzes`     | Create a quiz                                            | 201     |
-| GET    | `/quizzes`     | List quizzes (`id`, `title`, `createdAt`, `questionsCount`) | 200  |
-| GET    | `/quizzes/:id` | Quiz with all questions and options                      | 200     |
-| DELETE | `/quizzes/:id` | Delete a quiz (questions and options are removed too)    | 204     |
-
-Errors use the shape `{ "error": { "message": "...", "details": [{ "path", "message" }] } }`:
-`400` for invalid input or id, `404` for an unknown quiz or route, `500` for unexpected errors.
-
-Question payloads, by `type`:
-
-- `BOOLEAN`: `text`, `booleanAnswer` (boolean)
-- `INPUT`: `text`, `textAnswer` (non-empty string)
-- `CHECKBOX`: `text`, `options[]` (2 to 10 items of `{ text, isCorrect }`, at least one correct)
-
-## Code quality
-
-Both packages have ESLint and Prettier configured:
-
-```bash
-npm run lint
-npm run format        # rewrite files with Prettier
-npm run format:check
-npm run typecheck
-```
-
-`.env` files are git-ignored; only `.env.example` files are committed.
+- Node.js
+- npm
+- A configured database, if required by the project
